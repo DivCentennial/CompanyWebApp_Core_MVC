@@ -2,7 +2,7 @@
 using CompanyWebApp_Core_MVC.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CompanyApp.Controllers
+namespace CompanyWebApp_Core_MVC.Controllers
 {
     public class DepartmentsController : Controller
     {
@@ -42,16 +42,21 @@ namespace CompanyApp.Controllers
             return RedirectToAction("Index");
         }
 
+        // GET: Departments/Delete/5
         public IActionResult Delete(int id)
         {
-            return View(dl.GetDepartment(id));
+            var dept = dl.GetDepartment(id);
+            if (dept == null) return NotFound();
+            return View(dept);
         }
 
-        [HttpPost]
-        public IActionResult DeleteConfirmed(int id)
+        // POST: Departments/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int Department_ID)
         {
-            dl.DeleteDepartment(id);
-            return RedirectToAction("Index");
+            dl.DeleteDepartment(Department_ID);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

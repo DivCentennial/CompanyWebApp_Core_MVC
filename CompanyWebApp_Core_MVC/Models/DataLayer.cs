@@ -6,7 +6,25 @@ namespace CompanyWebApp_Core_MVC.Models
 {
     public class DataLayer
     {
-        private string connectionString = "Data Source=DIVYANSHOO\\SQLEXPRESS;Initial Catalog=Company;Integrated Security=True;";
+        private string connectionString = "Data Source=10.201.1.173\\ERP,1433;Initial Catalog=MA_TRAINING;Integrated Security=True;";
+
+        public DataLayer()
+        {
+            // Validate connection string
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    Console.WriteLine("Database connection test successful");
+                    con.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Database connection test failed: {ex.Message}");
+            }
+        }
 
         public List<Department> GetDepartments()
         {
@@ -77,13 +95,31 @@ namespace CompanyWebApp_Core_MVC.Models
 
         public void DeleteDepartment(int id)
         {
-            using (SqlConnection con = new SqlConnection(connectionString))
+            try
             {
-                con.Open();
-                SqlCommand cmd = new SqlCommand(
-                    "DELETE FROM Department_Details WHERE Department_ID=@id", con);
-                cmd.Parameters.AddWithValue("@id", id);
-                cmd.ExecuteNonQuery();
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    Console.WriteLine($"Database connection opened successfully");
+                    
+                    SqlCommand cmd = new SqlCommand(
+                        "DELETE FROM Department_Details WHERE Department_ID=@id", con);
+                    cmd.Parameters.AddWithValue("@id", id);
+                    
+                    Console.WriteLine($"Executing DELETE query for Department_ID: {id}");
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    Console.WriteLine($"Delete query executed. Rows affected: {rowsAffected}");
+                    
+                    if (rowsAffected == 0)
+                    {
+                        Console.WriteLine($"Warning: No rows were deleted. Department_ID {id} may not exist.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DeleteDepartment: {ex.Message}");
+                throw;
             }
         }
     }
